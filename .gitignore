@@ -17,3 +17,4 @@ local.properties
 /.ignore
 /app/debug
 /app/release
+cmdline-tools.zip
