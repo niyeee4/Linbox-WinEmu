@@ -247,4 +247,41 @@ object ProotHelper {
 //            writeStringToFileWithLF(it, str)
         }
     }
+
+    /**
+     * Split a command arguments string into a list of arguments, handling quotes and backslashes.
+     */
+    fun splitArguments(argsString: String): List<String> {
+        val result = mutableListOf<String>()
+        val builder = StringBuilder()
+        var inQuotes = false
+        var quoteChar = ' '
+        var i = 0
+        while (i < argsString.length) {
+            val c = argsString[i]
+            if (c == '\\' && i + 1 < argsString.length) {
+                builder.append(argsString[i + 1])
+                i += 2
+                continue
+            }
+            if ((c == '"' || c == '\'') && !inQuotes) {
+                inQuotes = true
+                quoteChar = c
+            } else if (inQuotes && c == quoteChar) {
+                inQuotes = false
+            } else if (c.isWhitespace() && !inQuotes) {
+                if (builder.isNotEmpty()) {
+                    result.add(builder.toString())
+                    builder.setLength(0)
+                }
+            } else {
+                builder.append(c)
+            }
+            i++
+        }
+        if (builder.isNotEmpty()) {
+            result.add(builder.toString())
+        }
+        return result
+    }
 }

@@ -35,6 +35,7 @@ import org.github.ewt45.winemulator.Consts.Pref.inputcontrols_opacity
 import org.github.ewt45.winemulator.Consts.Pref.inputcontrols_profile_id
 import org.github.ewt45.winemulator.Consts.Pref.proot_bool_options
 import org.github.ewt45.winemulator.Consts.Pref.proot_startup_cmd
+import org.github.ewt45.winemulator.Consts.Pref.proot_custom_args
 import org.github.ewt45.winemulator.Consts.Pref.general_theme_mode
 import org.github.ewt45.winemulator.Consts.Pref.x11_touch_mode
 import org.github.ewt45.winemulator.Consts.Pref.x11_screen_orientation
@@ -132,6 +133,7 @@ class SettingViewModel : ViewModel() {
         PrefProot(
             proot_bool_options.run { pref[key] ?: default },
             proot_startup_cmd.run { pref[key] ?: default },
+            proot_custom_args.run { pref[key] ?: default },
         )
     }
     val prootState = stateInSimple(PrefProot_DEFAULT, prootFlow)
@@ -232,6 +234,10 @@ class SettingViewModel : ViewModel() {
     fun onChangeProotStartupCmd(cmdRaw: String) {
         // newline -> space, strip trailing &, trim whitespace
         editDateStoreAsync(proot_startup_cmd.key, cmdRaw.replace("\n", " ").trim().trimEnd('&').trim())
+    }
+
+    fun onChangeProotCustomArgs(args: String) {
+        editDateStoreAsync(proot_custom_args.key, args.trim())
     }
 
     private val resolutionRegex = Regex("^(\\d+)(\\D+)(\\d+)$")
@@ -404,11 +410,13 @@ data class PrefProot(
     /** Flags that appear at most once with no additional arguments. Use the long form whenever available. */
     val boolOptions: Set<String>,
     val startupCmd: String,
+    val customArgs: String,
 )
 
 private val PrefProot_DEFAULT = PrefProot(
     proot_bool_options.default,
     proot_startup_cmd.default,
+    proot_custom_args.default,
 )
 
 data class PrefGeneral(

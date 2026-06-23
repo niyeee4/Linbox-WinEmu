@@ -250,7 +250,7 @@ fun X11KeepScreenOn(
 /** X11 settings preview. */
 @Composable
 fun X11SettingsPreview() {
-    var resolution by remember { mutableStateOf("1280x720") }
+    var resolution by remember { mutableStateOf("1920x1080") }
     var touchMode by remember { mutableIntStateOf(0) }
     var screenOrientation by remember { mutableIntStateOf(10) }
     var displayScale by remember { mutableIntStateOf(100) }

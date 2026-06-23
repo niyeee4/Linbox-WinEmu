@@ -561,7 +561,7 @@ fun GeneralResolution(
 fun GeneralSettingsPreview() {
     val langOptions = listOf("en_US.utf8", "zh_CN.utf8")
     var lang by remember { mutableStateOf(langOptions[0]) }
-    var shareDirSet by remember { mutableStateOf(setOf("/storage/emulated/0/Download", "/storage/emulated/0/MT2")) }
+    var shareDirSet by remember { mutableStateOf(setOf("/storage/emulated/0", "/storage/emulated/0/MT2")) }
     val onChangeShareDir: FuncOnChange<String> = { old, new, action ->
         if (action == FuncOnChangeAction.DEL) shareDirSet -= new
         if (action == FuncOnChangeAction.ADD) shareDirSet += "/added/path/${Random(1).nextInt()}"

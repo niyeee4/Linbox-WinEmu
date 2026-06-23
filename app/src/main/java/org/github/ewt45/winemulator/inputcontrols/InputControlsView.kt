@@ -43,6 +43,9 @@ class InputControlsView(
     private var offsetX = 0f
     private var offsetY = 0f
     private val cursor = Point()
+    private var mousePointerId = -1
+    private var mouseLastX = 0f
+    private var mouseLastY = 0f
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val path = Path()
@@ -382,24 +385,26 @@ class InputControlsView(
             val pointerId = event.getPointerId(actionIndex)
             val actionMasked = event.actionMasked
 
-            var handled = false
-
             when (actionMasked) {
                 MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                     val x = event.getX(actionIndex)
                     val y = event.getY(actionIndex)
 
+                    var handledByElement = false
                     for (element in profile!!.getElements()) {
                         if (element.handleTouchDown(pointerId, x, y)) {
                             vibrator?.vibrate(vibrationEffect)
-                            handled = true
+                            handledByElement = true
                             break
                         }
                     }
 
-                    if (!handled) {
-                        // Let touchpadView handle it if present (does not necessarily consume the event)
-                        touchpadView?.onTouchEvent(event)
+                    if (!handledByElement) {
+                        if (mousePointerId == -1) {
+                            mousePointerId = pointerId
+                            mouseLastX = x
+                            mouseLastY = y
+                        }
                     }
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -408,31 +413,51 @@ class InputControlsView(
                         val y = event.getY(i)
                         val id = event.getPointerId(i)
 
+                        var handledByElement = false
                         for (element in profile!!.getElements()) {
                             if (element.handleTouchMove(id, x, y)) {
-                                handled = true
+                                handledByElement = true
                                 break
                             }
                         }
-                    }
 
-                    if (!handled) {
-                        touchpadView?.onTouchEvent(event)
+                        if (!handledByElement && id == mousePointerId) {
+                            val dx = x - mouseLastX
+                            val dy = y - mouseLastY
+
+                            if (dx != 0f || dy != 0f) {
+                                val sendDx: Int
+                                val sendDy: Int
+                                if (abs(dx) > TouchpadView.CURSOR_ACCELERATION_THRESHOLD || abs(dy) > TouchpadView.CURSOR_ACCELERATION_THRESHOLD) {
+                                    sendDx = (dx * TouchpadView.CURSOR_ACCELERATION).toInt()
+                                    sendDy = (dy * TouchpadView.CURSOR_ACCELERATION).toInt()
+                                } else {
+                                    sendDx = dx.toInt()
+                                    sendDy = dy.toInt()
+                                }
+                                if (sendDx != 0 || sendDy != 0) {
+                                    inputEventHandler?.onPointerMove(sendDx, sendDy)
+                                }
+                            }
+                            mouseLastX = x
+                            mouseLastY = y
+                        }
                     }
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
                     for (element in profile!!.getElements()) {
-                        if (element.handleTouchUp(pointerId)) {
-                            handled = true
-                        }
+                        element.handleTouchUp(pointerId)
                     }
 
-                    if (!handled) {
-                        touchpadView?.onTouchEvent(event)
+                    if (pointerId == mousePointerId) {
+                        mousePointerId = -1
+                    }
+                    if (actionMasked == MotionEvent.ACTION_UP || actionMasked == MotionEvent.ACTION_CANCEL) {
+                        mousePointerId = -1
                     }
                 }
             }
-            return handled
+            return true
         }
         // When showTouchscreenControls is false or profile is null, do not consume touch events — pass them to the layer below
         return false

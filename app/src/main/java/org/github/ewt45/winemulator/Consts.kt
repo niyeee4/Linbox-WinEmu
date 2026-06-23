@@ -87,11 +87,12 @@ object Consts {
         /** All preference items — used for batch operations such as export, import, and reset. */
         val allItems by lazy { getAllPrefItems() }
 
-        val general_resolution by item("general_resolution", "1280x720")
+        val general_resolution by item("general_resolution", "1920x1080")
         val general_rootfs_lang by item("general_rootfs_lang", "en_US.utf8")
-        val general_shared_ext_path by item("shared_ext_path", setOf("/storage/emulated/0/Download"))
+        val general_shared_ext_path by item("shared_ext_path", setOf("/storage/emulated/0"))
         val proot_bool_options by item("proot_bool_options", setOf( "-L", "--link2symlink", "--sysvipc", "--kill-on-exit", /*"--root-id",*/))
         val proot_startup_cmd by item("proot_startup_cmd", "")
+        val proot_custom_args by item("proot_custom_args", "")
 
         // Input Controls Settings
         val inputcontrols_enabled by item("inputcontrols_enabled", false)
@@ -118,7 +119,7 @@ object Consts {
         // X11 Settings - picture-in-picture mode
         val x11_pip_mode by item("x11_pip_mode", false)
         // X11 Settings - resolution in "widthxheight" format, e.g. "1280x720"
-        val x11_resolution by item("x11_resolution", "1280x720")
+        val x11_resolution by item("x11_resolution", "1920x1080")
 
         /** Stored on this device only — excluded from export/import. */
         object Local {

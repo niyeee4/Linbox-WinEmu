@@ -659,7 +659,7 @@ class ControlElement(
                     val touchpadView = inputControlsView.touchpadView
                     if (currentPosition == null) currentPosition = PointF()
                     val deltaPoint = touchpadView?.computeDeltaPoint(currentPosition!!.x, currentPosition!!.y, px, py)
-                        ?: floatArrayOf(0f, 0f)
+                        ?: floatArrayOf(px - currentPosition!!.x, py - currentPosition!!.y)
                     deltaX = deltaPoint[0]
                     deltaY = deltaPoint[1]
                     currentPosition?.set(px, py)

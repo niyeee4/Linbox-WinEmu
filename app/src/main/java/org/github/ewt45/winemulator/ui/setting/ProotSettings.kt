@@ -37,6 +37,7 @@ fun ProotSettings(settingVM: SettingViewModel) {
 
     CollapsePanel("PRoot Options") {
         ProotNoValueOptions(proot.boolOptions, settingVM::onChangeProotBoolOptions)
+        ProotCustomArgs(proot.customArgs, settingVM::onChangeProotCustomArgs)
         ProotStartupCmd(proot.startupCmd, settingVM::onChangeProotStartupCmd)
     }
 }
@@ -80,6 +81,14 @@ fun ProotNoValueOptions(
 }
 
 @Composable
+fun ProotCustomArgs(
+    args: String,
+    onChange: (String) -> Unit
+) {
+    TextFieldOption(title = "Custom PRoot arguments", text = args, onDone = onChange)
+}
+
+@Composable
 fun ProotStartupCmd(
     cmd: String,
     onChange: (String) -> Unit
@@ -92,12 +101,14 @@ fun ProotStartupCmd(
 fun ProotSettingsPreview() {
     CollapsePanel("PRoot Options") {
         var proot_no_value_options by remember { mutableStateOf(setOf("-L", "--link2symlink", "--sysvipc", "--kill-on-exit" /*"--root-id",*/)) }
+        var proot_custom_args by remember { mutableStateOf("") }
         var proot_startup_cmd by remember { mutableStateOf("") }
         ProotNoValueOptions(proot_no_value_options, { key, checked ->
             if (checked) proot_no_value_options += key
             else proot_no_value_options -= key
         })
 //        Spacer(Modifier.height(16.dp))
+        ProotCustomArgs(proot_custom_args) { proot_custom_args = it }
         ProotStartupCmd(proot_startup_cmd) { proot_startup_cmd = it }
     }
 }

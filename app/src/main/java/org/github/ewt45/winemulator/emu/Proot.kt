@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils
 import org.github.ewt45.winemulator.Consts
 import org.github.ewt45.winemulator.Consts.Pref.general_shared_ext_path
 import org.github.ewt45.winemulator.Consts.Pref.proot_bool_options
+import org.github.ewt45.winemulator.Consts.Pref.proot_custom_args
 import org.github.ewt45.winemulator.Consts.rootfsCurrL2sDir
 import org.github.ewt45.winemulator.Utils.chmod
 import org.github.ewt45.winemulator.emu.ProotHelper.DEFAULT_FAKE_KERNEL_VERSION
@@ -62,6 +63,11 @@ class Proot {
             "--bind=/dev",
 //            "--bind=/storage/emulated/0/Download",
         )
+
+        val customArgs = proot_custom_args.get()
+        if (customArgs.isNotBlank()) {
+            prootCmd.addAll(ProotHelper.splitArguments(customArgs))
+        }
 
         // proot-distro binds these unconditionally, but in practice they already exist
         File("/dev/stderr").takeIf { !it.exists() }?.let {
